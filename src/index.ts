@@ -1,4 +1,4 @@
-require("dotenv/config");
+import "dotenv/config";
 
 import { detailedDiff } from "deep-object-diff";
 import execa from "execa";
