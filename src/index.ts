@@ -98,6 +98,7 @@ const fetchGitRepository = async (force = false) => {
 
 					if (Object.keys(historyObj).length > 0) {
 						historyObj.lastUpdated = +Date.now();
+						historyObj.type = "update";
 						historyWrites.push({
 							updateOne: {
 								filter: { key },
@@ -121,6 +122,7 @@ const fetchGitRepository = async (force = false) => {
 						});
 					}
 				} else {
+					const historyObj: Partial<ITokenHistory> = {};
 					console.log(`${key} doesn't exist`);
 					fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
 					const now = +Date.now();
@@ -130,6 +132,15 @@ const fetchGitRepository = async (force = false) => {
 								key,
 								raw: JSON.stringify(coinJsonInfo),
 								img: imageHash,
+							},
+						},
+					});
+
+					historyWrites.push({
+						insertOne: {
+							document: {
+								key,
+								type: "add",
 							},
 						},
 					});

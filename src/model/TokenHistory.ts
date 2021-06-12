@@ -5,6 +5,7 @@ export interface ITokenHistory {
 	infodiff: string;
 	imgdiff: string;
 	lastUpdated: number;
+	type: "add" | "update";
 }
 
 const TokenHistorySchemaFields: Record<keyof ITokenHistory, any> = {
@@ -21,6 +22,11 @@ const TokenHistorySchemaFields: Record<keyof ITokenHistory, any> = {
 	},
 	lastUpdated: {
 		type: Number,
+	},
+	type: {
+		type: String,
+		enum: ["add", "update"],
+		required: true,
 	},
 };
 
