@@ -22,6 +22,7 @@ const TokenHistorySchemaFields: Record<keyof ITokenHistory, any> = {
 	},
 	lastUpdated: {
 		type: Number,
+		default: +Date.now(),
 	},
 	type: {
 		type: String,
