@@ -28,7 +28,7 @@ app.get("/history", async (req, res) => {
 
 app.get("/token/:token", async (req, res) => {
 	const results = await Promise.allSettled([
-		Token.find({ key: req.params.token }).select("-_id").lean().exec(),
+		Token.findOne({ key: req.params.token }).select("-_id").lean().exec(),
 		TokenHistory.find({ key: req.params.token }).sort({ lastUpdated: -1 }).select("-_id").lean().exec(),
 	]);
 
