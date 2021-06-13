@@ -1,4 +1,5 @@
 import "dotenv/config";
+import "./server";
 
 import { detailedDiff } from "deep-object-diff";
 import execa from "execa";
