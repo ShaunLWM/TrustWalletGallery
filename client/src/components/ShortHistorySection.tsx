@@ -57,14 +57,20 @@ export default function ShortHistorySection() {
 		}
 
 		const arr = [];
-		if (Object.keys(history.infodiff.added).length > 0) {
-			arr.push(<span>Added {Object.keys(history.infodiff.added).length} keys</span>);
+		if (history.infodiff) {
+			if (history.infodiff.added && Object.keys(history.infodiff.added).length > 0) {
+				arr.push(<span>Added {Object.keys(history.infodiff.added).length} keys</span>);
+			}
+			if (history.infodiff.deleted && Object.keys(history.infodiff.deleted).length > 0) {
+				arr.push(<span>Added {Object.keys(history.infodiff.deleted).length} keys</span>);
+			}
+			if (history.infodiff.updated && Object.keys(history.infodiff.updated).length > 0) {
+				arr.push(<span>Added {Object.keys(history.infodiff.updated).length} keys</span>);
+			}
 		}
-		if (Object.keys(history.infodiff.deleted).length > 0) {
-			arr.push(<span>Added {Object.keys(history.infodiff.deleted).length} keys</span>);
-		}
-		if (Object.keys(history.infodiff.updated).length > 0) {
-			arr.push(<span>Added {Object.keys(history.infodiff.updated).length} keys</span>);
+
+		if (history.imgdiff) {
+			arr.push(<span>Added new image</span>);
 		}
 
 		if (arr.length > 0) {
