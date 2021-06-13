@@ -14,8 +14,16 @@ app.use(compression());
 app.use(express.static("public"));
 
 app.get("/history", async (req, res) => {
-	const histories = await TokenHistory.find().sort({ lastUpdated: -1 }).limit(20).select("-_id").exec();
-	return res.status(200).json({ success: true, histories });
+	const histories = await TokenHistory.find().sort({ lastUpdated: -1 }).limit(20).select("-_id").lean().exec();
+	return res.status(200).json({
+		success: true,
+		histories: histories.map((history) => {
+			return {
+				...history,
+				infodiff: history.infodiff ? JSON.parse(history.infodiff) : undefined,
+			};
+		}),
+	});
 });
 
 app.get("/token/:token", async (req, res) => {
