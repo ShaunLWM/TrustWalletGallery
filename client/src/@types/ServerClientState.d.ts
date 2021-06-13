@@ -29,7 +29,7 @@ export interface TokenResultsSuccess {
 	success: true;
 	token: {
 		key: string;
-		raw: string;
+		raw: TokenRawObj;
 		img: string;
 	};
 	histories: {
@@ -39,4 +39,17 @@ export interface TokenResultsSuccess {
 		lastUpdated: number;
 		type: "add" | "update";
 	}[];
+}
+
+export interface TokenRawObj {
+	name?: string;
+	symbol?: string;
+	type?: string;
+	decimals?: number;
+	description?: string;
+	website?: string;
+	explorer?: string;
+	research?: string;
+	status?: string;
+	id?: string;
 }

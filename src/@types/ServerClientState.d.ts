@@ -18,23 +18,38 @@ export interface HistoryRouteResults {
 	msg?: string;
 }
 
-export type TokenResults =
-	| {
-			success: false;
-			msg: string;
-	  }
-	| {
-			success: true;
-			token: {
-				key: string;
-				raw: string;
-				img: string;
-			};
-			histories: {
-				key: string;
-				infodiff?: InfoDiff;
-				imgdiff?: string;
-				lastUpdated: number;
-				type: "add" | "update";
-			}[];
-	  };
+export type TokenResults = TokenResultsSuccess | TokenResultsFailed;
+
+export interface TokenResultsFailed {
+	success: false;
+	msg: string;
+}
+
+export interface TokenResultsSuccess {
+	success: true;
+	token: {
+		key: string;
+		raw: TokenRawObj;
+		img: string;
+	};
+	histories: {
+		key: string;
+		infodiff?: InfoDiff;
+		imgdiff?: string;
+		lastUpdated: number;
+		type: "add" | "update";
+	}[];
+}
+
+export interface TokenRawObj {
+	name?: string;
+	symbol?: string;
+	type?: string;
+	decimals?: number;
+	description?: string;
+	website?: string;
+	explorer?: string;
+	research?: string;
+	status?: string;
+	id?: string;
+}
