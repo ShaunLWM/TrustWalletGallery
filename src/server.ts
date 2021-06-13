@@ -17,6 +17,11 @@ app.use(express.static("public"));
 
 app.get("/history", async (req, res) => {
 	const histories = await TokenHistory.aggregate([
+		// {
+		// 	$match: {
+		// 		type: "update",
+		// 	},
+		// },
 		{
 			$lookup: {
 				from: "tokens",
@@ -36,6 +41,8 @@ app.get("/history", async (req, res) => {
 				key: 1,
 				type: 1,
 				lastUpdated: 1,
+				infodiff: 1,
+				imgdiff: 1,
 				platform: "$token.platform",
 				raw: "$token.raw",
 			},
