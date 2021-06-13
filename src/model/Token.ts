@@ -32,12 +32,8 @@ const TokenSchema = new Schema<ITokenDocument, ITokenModel>(TokenSchemaFields, {
 	timestamps: false,
 });
 
-export interface ITokenDocument extends IToken, Document {
-	getMarketHours: (model: Model<ITokenDocument>, marketHours: number) => void;
-}
+export interface ITokenDocument extends IToken, Document {}
 
-export interface ITokenModel extends Model<ITokenDocument> {
-	getMarketHours(mode: Model<ITokenDocument>, marketHours: number): Promise<ITokenDocument[]>;
-}
+export interface ITokenModel extends Model<ITokenDocument> {}
 
 export default model<ITokenDocument, ITokenModel>("Token", TokenSchema);
