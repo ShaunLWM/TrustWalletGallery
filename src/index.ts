@@ -142,6 +142,7 @@ const fetchGitRepository = async (force = false) => {
 						document: {
 							key,
 							type: "add",
+							lastUpdated: now,
 						},
 					},
 				});
