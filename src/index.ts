@@ -124,7 +124,6 @@ const fetchGitRepository = async (force = false) => {
 					});
 				}
 			} else {
-				const historyObj: Partial<ITokenHistory> = {};
 				console.log(`${key} doesn't exist`);
 				fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
 				const now = +Date.now();
