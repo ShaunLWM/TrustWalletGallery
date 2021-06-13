@@ -18,26 +18,26 @@ const PROJECT_DIRECTORY = path.resolve(".");
 const TRUST_WALLET_ASSET_DIRECTORY = path.resolve("..", ASSET_FOLDER_NAME);
 
 const fetchGitRepository = async (force = false) => {
-	if (!fs.pathExistsSync(TRUST_WALLET_ASSET_DIRECTORY)) {
-		console.log(`Path doesn't exist. Cloning..`);
-		const results = await execa("git", [
-			"clone",
-			"https://github.com/trustwallet/assets",
-			TRUST_WALLET_ASSET_DIRECTORY,
-		]);
-		console.log(results);
-	}
+	// if (!fs.pathExistsSync(TRUST_WALLET_ASSET_DIRECTORY)) {
+	// 	console.log(`Path doesn't exist. Cloning..`);
+	// 	const results = await execa("git", [
+	// 		"clone",
+	// 		"https://github.com/trustwallet/assets",
+	// 		TRUST_WALLET_ASSET_DIRECTORY,
+	// 	]);
+	// 	console.log(results);
+	// }
 
 	console.log(`Folder exist. Updating..`);
 	process.chdir(TRUST_WALLET_ASSET_DIRECTORY);
-	const repoFetch = await execa("git", ["fetch"]);
-	// TODO: check the error message for not a git repo then clone again
-	console.log(repoFetch);
-	const repoPull = await execa("git", ["pull"]);
-	console.log(repoPull);
-	if (repoPull.stdout === "Already up to date." && !force) {
-		return console.log("Already up to date. Ignoring..");
-	}
+	// const repoFetch = await execa("git", ["fetch"]);
+	// // TODO: check the error message for not a git repo then clone again
+	// console.log(repoFetch);
+	// const repoPull = await execa("git", ["pull"]);
+	// console.log(repoPull);
+	// if (repoPull.stdout === "Already up to date." && !force) {
+	// 	return console.log("Already up to date. Ignoring..");
+	// }
 
 	const historyWrites = [];
 	const tokenWrites = [];
@@ -133,6 +133,7 @@ const fetchGitRepository = async (force = false) => {
 							key,
 							raw: JSON.stringify(coinJsonInfo),
 							img: imageHash,
+							platform: folder,
 						},
 					},
 				});

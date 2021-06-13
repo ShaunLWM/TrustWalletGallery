@@ -4,6 +4,7 @@ export interface IToken {
 	key: string;
 	raw: string;
 	img: string;
+	platform: string;
 }
 
 const TokenSchemaFields: Record<keyof IToken, any> = {
@@ -18,6 +19,10 @@ const TokenSchemaFields: Record<keyof IToken, any> = {
 		required: true,
 	},
 	img: {
+		type: String,
+		required: true,
+	},
+	platform: {
 		type: String,
 		required: true,
 	},
