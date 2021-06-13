@@ -79,7 +79,7 @@ export default function ShortHistorySection() {
 
 	const renderChangelog = (history: HistoryRouteItem) => {
 		if (history.type === "add") {
-			return <span>added token</span>;
+			return <span>Token published</span>;
 		}
 
 		const arr = [];
