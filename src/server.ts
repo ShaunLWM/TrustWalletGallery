@@ -42,7 +42,12 @@ app.get("/token/:token", async (req, res) => {
 	}
 
 	if (results[1].status === "fulfilled") {
-		json.histories = results[1].value;
+		json.histories = results[1].value.map((history) => {
+			return {
+				...history,
+				infodiff: history.infodiff ? JSON.parse(history.infodiff) : undefined,
+			};
+		});
 	}
 
 	return res.status(200).json({ success: true, result: json });
