@@ -22,9 +22,12 @@ const HistoryLeft = styled.div`
 
 const HistoryId = styled.span`
 	min-width: 120px;
+	color: #0095ff;
+	cursor: pointer;
 `;
 
 const HistoryLink = styled(Link)`
+	min-width: 120px;
 	text-decoration: none;
 	color: black;
 	&:focus,
@@ -122,10 +125,12 @@ export default function ShortHistorySection() {
 		<>
 			{histories.map((history: HistoryRouteItem) => {
 				return (
-					<HistoryLink to={`/token/${history.key}#history-${history._id}`}>
+					<HistoryLink to={`/token/${history.key}`}>
 						<HistoryRowContainer>
 							<HistoryLeft>
-								<HistoryId>#{history._id}</HistoryId>
+								<HistoryLink to={`/token/${history.key}#history-${history._id}`}>
+									<HistoryId>#{history._id}</HistoryId>
+								</HistoryLink>
 								<TokenImage src={`${getBaseUrl()}/img/token/${history.key}.png`} alt="img" />
 								{renderChangelog(history)}
 							</HistoryLeft>
