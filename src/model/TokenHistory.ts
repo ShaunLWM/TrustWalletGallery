@@ -16,7 +16,6 @@ const TokenHistorySchemaFields: Record<keyof ITokenHistory, any> = {
 	},
 	key: {
 		type: String,
-		unique: true,
 		required: true,
 	},
 	infodiff: {
