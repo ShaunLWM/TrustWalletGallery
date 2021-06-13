@@ -11,3 +11,7 @@ body {
 span, pre, div {
 	color: #bfbfbf;
 }
+
+ul,ol {
+	margin: 0
+}
