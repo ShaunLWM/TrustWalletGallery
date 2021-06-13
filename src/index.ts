@@ -25,141 +25,141 @@ const fetchGitRepository = async (force = false) => {
 			TRUST_WALLET_ASSET_DIRECTORY,
 		]);
 		console.log(results);
-	} else {
-		console.log(`Folder exist. Updating..`);
-		process.chdir(TRUST_WALLET_ASSET_DIRECTORY);
-		const repoFetch = await execa("git", ["fetch"]);
-		// TODO: check the error message for not a git repo then clone again
-		console.log(repoFetch);
-		const repoPull = await execa("git", ["pull"]);
-		console.log(repoPull);
-		if (repoPull.stdout === "Already up to date." && !force) {
-			return console.log("Already up to date. Ignoring..");
-		}
+	}
 
-		const historyWrites = [];
-		const tokenWrites = [];
+	console.log(`Folder exist. Updating..`);
+	process.chdir(TRUST_WALLET_ASSET_DIRECTORY);
+	const repoFetch = await execa("git", ["fetch"]);
+	// TODO: check the error message for not a git repo then clone again
+	console.log(repoFetch);
+	const repoPull = await execa("git", ["pull"]);
+	console.log(repoPull);
+	if (repoPull.stdout === "Already up to date." && !force) {
+		return console.log("Already up to date. Ignoring..");
+	}
 
-		const folders = fs.readdirSync("blockchains").filter((dir) => BLOCKCHAIN_WHITELISTED_FOLDER.includes(dir));
+	const historyWrites = [];
+	const tokenWrites = [];
 
-		for (const folder of folders) {
-			const folderAssetsDirectory = path.resolve("blockchains", folder, "assets");
-			if (!fs.pathExistsSync(folderAssetsDirectory)) continue;
-			const coinsList = fs.readdirSync(folderAssetsDirectory);
+	const folders = fs.readdirSync("blockchains").filter((dir) => BLOCKCHAIN_WHITELISTED_FOLDER.includes(dir));
 
-			const keys = coinsList.map((c) => `${folder}-${c}`);
-			const tokens = await Token.find().where("key").in(keys).lean().exec();
+	for (const folder of folders) {
+		const folderAssetsDirectory = path.resolve("blockchains", folder, "assets");
+		if (!fs.pathExistsSync(folderAssetsDirectory)) continue;
+		const coinsList = fs.readdirSync(folderAssetsDirectory);
 
-			for (const coin of coinsList) {
-				const key = `${folder}-${coin}`;
-				console.log(key);
+		const keys = coinsList.map((c) => `${folder}-${c}`);
+		const tokens = await Token.find().where("key").in(keys).lean().exec();
 
-				const coinPath = path.join(folderAssetsDirectory, coin);
-				const coinDirectory = fs.readdirSync(coinPath);
+		for (const coin of coinsList) {
+			const key = `${folder}-${coin}`;
+			console.log(key);
 
-				if (!coinDirectory.includes("logo.png") || !coinDirectory.includes("info.json")) {
-					console.log(`${key}: missing assets`);
-					continue;
-				}
+			const coinPath = path.join(folderAssetsDirectory, coin);
+			const coinDirectory = fs.readdirSync(coinPath);
 
-				const logoPath = path.join(coinPath, "logo.png");
-				const imageHash = md5File.sync(logoPath);
-				const coinJsonInfo = fs.readJsonSync(path.join(coinPath, "info.json"));
-				const existingToken = tokens.find((token) => token.key === key);
+			if (!coinDirectory.includes("logo.png") || !coinDirectory.includes("info.json")) {
+				console.log(`${key}: missing assets`);
+				continue;
+			}
 
-				if (existingToken) {
-					console.log(`${key} exist. checking changes.`);
-					const historyObj: Partial<ITokenHistory> = {};
-					const tokenObj: Partial<IToken> = {};
+			const logoPath = path.join(coinPath, "logo.png");
+			const imageHash = md5File.sync(logoPath);
+			const coinJsonInfo = fs.readJsonSync(path.join(coinPath, "info.json"));
+			const existingToken = tokens.find((token) => token.key === key);
 
-					// check info.json diff
-					try {
-						const existingTokenRaw = JSON.parse(existingToken.raw);
-						const jsonChanges = detailedDiff(existingTokenRaw, coinJsonInfo) as any;
-						if (
-							(jsonChanges["added"] && Object.keys(jsonChanges["added"]).length > 0) ||
-							(jsonChanges["deleted"] && Object.keys(jsonChanges["deleted"]).length > 0) ||
-							(jsonChanges["updated"] && Object.keys(jsonChanges["updated"]).length > 0)
-						) {
-							console.log(`${key}: json changes`);
-							historyObj.infodiff = JSON.stringify(jsonChanges);
-							tokenObj.raw = JSON.stringify(coinJsonInfo);
-						}
-					} catch (error) {}
+			if (existingToken) {
+				console.log(`${key} exist. checking changes.`);
+				const historyObj: Partial<ITokenHistory> = {};
+				const tokenObj: Partial<IToken> = {};
 
-					// check logo.png
-					if (existingToken.img !== imageHash) {
-						// TODO: log changes
-						console.log(`${key}: img changes`);
-						historyObj.imgdiff = imageHash;
-						tokenObj.img = imageHash;
-						fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
+				// check info.json diff
+				try {
+					const existingTokenRaw = JSON.parse(existingToken.raw);
+					const jsonChanges = detailedDiff(existingTokenRaw, coinJsonInfo) as any;
+					if (
+						(jsonChanges["added"] && Object.keys(jsonChanges["added"]).length > 0) ||
+						(jsonChanges["deleted"] && Object.keys(jsonChanges["deleted"]).length > 0) ||
+						(jsonChanges["updated"] && Object.keys(jsonChanges["updated"]).length > 0)
+					) {
+						console.log(`${key}: json changes`);
+						historyObj.infodiff = JSON.stringify(jsonChanges);
+						tokenObj.raw = JSON.stringify(coinJsonInfo);
 					}
+				} catch (error) {}
 
-					if (Object.keys(historyObj).length > 0) {
-						historyObj.lastUpdated = +Date.now();
-						historyObj.type = "update";
-						historyWrites.push({
-							updateOne: {
-								filter: { key },
-								update: {
-									$set: historyObj,
-								},
-								upsert: true,
-							},
-						});
-					}
-
-					if (Object.keys(tokenObj).length > 0) {
-						tokenWrites.push({
-							updateOne: {
-								filter: { key },
-								update: {
-									$set: tokenObj,
-								},
-								upsert: true,
-							},
-						});
-					}
-				} else {
-					const historyObj: Partial<ITokenHistory> = {};
-					console.log(`${key} doesn't exist`);
+				// check logo.png
+				if (existingToken.img !== imageHash) {
+					// TODO: log changes
+					console.log(`${key}: img changes`);
+					historyObj.imgdiff = imageHash;
+					tokenObj.img = imageHash;
 					fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
-					const now = +Date.now();
-					tokenWrites.push({
-						insertOne: {
-							document: {
-								key,
-								raw: JSON.stringify(coinJsonInfo),
-								img: imageHash,
-							},
-						},
-					});
+				}
 
+				if (Object.keys(historyObj).length > 0) {
+					historyObj.lastUpdated = +Date.now();
+					historyObj.type = "update";
 					historyWrites.push({
-						insertOne: {
-							document: {
-								key,
-								type: "add",
+						updateOne: {
+							filter: { key },
+							update: {
+								$set: historyObj,
 							},
+							upsert: true,
 						},
 					});
 				}
+
+				if (Object.keys(tokenObj).length > 0) {
+					tokenWrites.push({
+						updateOne: {
+							filter: { key },
+							update: {
+								$set: tokenObj,
+							},
+							upsert: true,
+						},
+					});
+				}
+			} else {
+				const historyObj: Partial<ITokenHistory> = {};
+				console.log(`${key} doesn't exist`);
+				fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
+				const now = +Date.now();
+				tokenWrites.push({
+					insertOne: {
+						document: {
+							key,
+							raw: JSON.stringify(coinJsonInfo),
+							img: imageHash,
+						},
+					},
+				});
+
+				historyWrites.push({
+					insertOne: {
+						document: {
+							key,
+							type: "add",
+						},
+					},
+				});
 			}
 		}
-
-		if (tokenWrites.length > 0) {
-			console.log(`${tokenWrites.length} tokenWrites to be added.`);
-			await Token.collection.bulkWrite(tokenWrites);
-		}
-
-		if (historyWrites.length > 0) {
-			console.log(`${historyWrites.length} historyWrites to be added.`);
-			await TokenHistory.collection.bulkWrite(historyWrites);
-		}
-
-		console.log(`Done`);
 	}
+
+	if (tokenWrites.length > 0) {
+		console.log(`${tokenWrites.length} tokenWrites to be added.`);
+		await Token.collection.bulkWrite(tokenWrites);
+	}
+
+	if (historyWrites.length > 0) {
+		console.log(`${historyWrites.length} historyWrites to be added.`);
+		await TokenHistory.collection.bulkWrite(historyWrites);
+	}
+
+	console.log(`Done`);
 };
 
 (async () => {
