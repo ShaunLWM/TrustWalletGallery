@@ -1,8 +1,7 @@
 import "dotenv/config";
-import "./server";
 
+import cryptoRandomString from "crypto-random-string";
 import { detailedDiff } from "deep-object-diff";
-import execa from "execa";
 import fs from "fs-extra";
 import md5File from "md5-file";
 import mongoose from "mongoose";
@@ -10,6 +9,7 @@ import schedule from "node-schedule";
 import path from "path";
 import Token, { IToken } from "./model/Token";
 import TokenHistory, { ITokenHistory } from "./model/TokenHistory";
+import "./server";
 
 const ASSET_FOLDER_NAME = "TrustWalletAssets";
 const BLOCKCHAIN_WHITELISTED_FOLDER = ["binance", "bitcoin", "ethereum"];
@@ -101,6 +101,7 @@ const fetchGitRepository = async (force = false) => {
 				if (Object.keys(historyObj).length > 0) {
 					historyObj.lastUpdated = +Date.now();
 					historyObj.type = "update";
+					historyObj._id = cryptoRandomString({ length: 10 });
 					historyWrites.push({
 						updateOne: {
 							filter: { key },
@@ -144,6 +145,7 @@ const fetchGitRepository = async (force = false) => {
 							key,
 							type: "add",
 							lastUpdated: now,
+							_id: cryptoRandomString({ length: 10 }),
 						},
 					},
 				});

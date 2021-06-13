@@ -1,6 +1,7 @@
 import { Document, Model, model, Schema } from "mongoose";
 
 export interface ITokenHistory {
+	_id: string;
 	key: string;
 	infodiff: string;
 	imgdiff: string;
@@ -9,6 +10,11 @@ export interface ITokenHistory {
 }
 
 const TokenHistorySchemaFields: Record<keyof ITokenHistory, any> = {
+	_id: {
+		type: String,
+		unique: true,
+		required: true,
+	},
 	key: {
 		type: String,
 		unique: true,
@@ -35,7 +41,9 @@ const TokenHistorySchema = new Schema<ITokenHistoryDocument, ITokenHistoryModel>
 	timestamps: true,
 });
 
-export interface ITokenHistoryDocument extends ITokenHistory, Document {}
+export interface ITokenHistoryDocument extends ITokenHistory, Document {
+	_id: string;
+}
 
 export interface ITokenHistoryModel extends Model<ITokenHistoryDocument> {}
 
