@@ -1,0 +1,13 @@
+html {
+	font-family: 'Inter', sans-serif;
+}
+
+body {
+	flex: 1;
+	background-color: #161920;
+	height: 100%;
+}
+
+span, pre, div {
+	color: #bfbfbf;
+}
