@@ -82,7 +82,11 @@ export default function ShortHistorySection() {
 
 	const renderChangelog = (history: HistoryRouteItem) => {
 		if (history.type === "add") {
-			return <span>Token published - <b>{history.raw?.name}</b></span>;
+			return (
+				<span>
+					Token published - <b>{history.raw?.name}</b>
+				</span>
+			);
 		}
 
 		const arr = [];
@@ -104,11 +108,11 @@ export default function ShortHistorySection() {
 
 		if (arr.length > 0) {
 			return (
-				<li>
+				<ul>
 					{arr.map((p) => (
-						<ul>{p}</ul>
+						<li>{p}</li>
 					))}
-				</li>
+				</ul>
 			);
 		}
 	};
