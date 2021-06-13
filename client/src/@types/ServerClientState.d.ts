@@ -1,16 +1,23 @@
+export interface TokenHistoryAggregateRaw {
+	_id: string;
+	key: string;
+	infodiff: string;
+	imgdiff: string;
+	lastUpdated: number;
+	type: "add" | "update";
+	raw?: string;
+	platform?: string;
+}
+
 export interface InfoDiff {
 	added: object;
 	deleted: object;
 	updated: object;
 }
 
-export interface HistoryRouteItem {
-	_id: string;
-	key: string;
+export interface HistoryRouteItem extends Omit<TokenHistoryAggregateRaw, "infodiff" | "raw"> {
 	infodiff?: InfoDiff;
-	imgdiff?: string;
-	lastUpdated: number;
-	type: "add" | "update";
+	raw?: TokenRawObj;
 }
 
 export interface HistoryRouteResults {
