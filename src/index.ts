@@ -12,7 +12,7 @@ import TokenHistory, { ITokenHistory } from "./model/TokenHistory";
 import "./server";
 
 const ASSET_FOLDER_NAME = "TrustWalletAssets";
-const BLOCKCHAIN_WHITELISTED_FOLDER = ["binance", "bitcoin", "ethereum"];
+const BLOCKCHAIN_WHITELISTED_FOLDER = ["binance", "bitcoin", "ethereum", "smartchain", "polygon"];
 
 const PROJECT_DIRECTORY = path.resolve(".");
 const TRUST_WALLET_ASSET_DIRECTORY = path.resolve("..", ASSET_FOLDER_NAME);
