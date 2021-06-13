@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import styled from "styled-components";
 import { TokenResults, TokenResultsSuccess } from "../@types/ServerClientState";
 import { getBaseUrl } from "../utils/EnvironmentManager";
+
+const Container = styled.div`
+	display: flex;
+	flex-direction: column;
+`;
+
+const TokenImage = styled.img`
+	height: 42px;
+	width: 42px;
+`
 
 export default function TokenPage() {
 	const { id } = useParams<{ id: string }>();
@@ -45,14 +56,13 @@ export default function TokenPage() {
 	}
 
 	return (
-		<>
-			<div>
-				<img src={`${getBaseUrl()}/img/token/${token?.key}.png`} alt={token?.key} />
-				<span>
-					{token?.raw.name} [{token?.raw.symbol}]
-				</span>
-				<code>{JSON.stringify(token?.raw, null, 2)}</code>
-			</div>
-		</>
+		<Container>
+			<span>
+				{token?.raw.name} [{token?.raw.symbol}]
+			</span>
+			<TokenImage src={`${getBaseUrl()}/img/token/${token?.key}.png`} alt={token?.key} />
+
+			<pre>{JSON.stringify(token?.raw, null, 2)}</pre>
+		</Container>
 	);
 }
