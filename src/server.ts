@@ -50,7 +50,7 @@ app.get("/token/:token", async (req, res) => {
 		});
 	}
 
-	return res.status(200).json({ success: true, result: json });
+	return res.status(200).json({ success: true, ...json });
 });
 
 app.listen(process.env.SERVER_PORT, () => {
