@@ -14,7 +14,7 @@ app.use(compression());
 app.use(express.static("public"));
 
 app.get("/history", async (req, res) => {
-	const histories = await TokenHistory.find().sort({ lastUpdated: -1 }).limit(20).select("-_id").lean().exec();
+	const histories = await TokenHistory.find().sort({ lastUpdated: -1 }).limit(20).lean().exec();
 	return res.status(200).json({
 		success: true,
 		histories: histories.map((history) => {
@@ -29,7 +29,7 @@ app.get("/history", async (req, res) => {
 app.get("/token/:token", async (req, res) => {
 	const results = await Promise.allSettled([
 		Token.findOne({ key: req.params.token }).select("-_id").lean().exec(),
-		TokenHistory.find({ key: req.params.token }).sort({ lastUpdated: -1 }).select("-_id").lean().exec(),
+		TokenHistory.find({ key: req.params.token }).sort({ lastUpdated: -1 }).lean().exec(),
 	]);
 
 	const json = {} as any;
