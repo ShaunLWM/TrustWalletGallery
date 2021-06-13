@@ -29,7 +29,7 @@ const TokenSchemaFields: Record<keyof IToken, any> = {
 };
 
 const TokenSchema = new Schema<ITokenDocument, ITokenModel>(TokenSchemaFields, {
-	timestamps: true,
+	timestamps: false,
 });
 
 export interface ITokenDocument extends IToken, Document {
