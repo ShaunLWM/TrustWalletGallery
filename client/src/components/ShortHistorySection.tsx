@@ -5,20 +5,41 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 
-const HistoryRow = styled.div`
+const HistoryRowContainer = styled.div`
 	display: flex;
 	align-items: center;
 	margin-bottom: 8px;
+	justify-content: space-between;
+	border-bottom: 1px solid rgba(35, 35, 35, 0.1);
+`;
+
+const HistoryLeft = styled.div`
+	display: flex;
+	align-items: center;
+	padding-bottom: 4px;
+`;
+
+const HistoryLink = styled(Link)`
+	text-decoration: none;
+	color: black;
+	&:focus,
+	&:hover,
+	&:visited,
+	&:link,
+	&:active {
+		text-decoration: none;
+		color: black;
+	}
 `;
 
 const TokenImage = styled.img`
-	width: 40px;
-	height: 40px;
+	width: 24px;
+	height: 24px;
 	margin-right: 8px;
 	border-radius: 50px;
 	border-width: 1px;
 	border-style: solid;
-	border-color: black;
+	border-color: rgba(35, 35, 35, 0.4);
 `;
 
 export default function ShortHistorySection() {
@@ -96,11 +117,15 @@ export default function ShortHistorySection() {
 		<>
 			{histories.map((history: HistoryRouteItem) => {
 				return (
-					<HistoryRow>
-						<Link to={`/token/${history.key}`}>{dayjs(history.lastUpdated).fromNow()}</Link>
-						<TokenImage src={`${getBaseUrl()}/img/token/${history.key}.png`} alt="img" />
-						{renderChangelog(history)}
-					</HistoryRow>
+					<HistoryLink to={`/token/${history.key}`}>
+						<HistoryRowContainer>
+							<HistoryLeft>
+								<TokenImage src={`${getBaseUrl()}/img/token/${history.key}.png`} alt="img" />
+								{renderChangelog(history)}
+							</HistoryLeft>
+							{dayjs(history.lastUpdated).fromNow()}
+						</HistoryRowContainer>
+					</HistoryLink>
 				);
 			})}
 		</>
