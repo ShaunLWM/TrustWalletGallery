@@ -5,6 +5,7 @@ export interface InfoDiff {
 }
 
 export interface HistoryRouteItem {
+	_id: string;
 	key: string;
 	infodiff?: InfoDiff;
 	imgdiff?: string;
@@ -33,6 +34,7 @@ export interface TokenResultsSuccess {
 		img: string;
 	};
 	histories: {
+		_id: string;
 		key: string;
 		infodiff?: InfoDiff;
 		imgdiff?: string;
