@@ -102,13 +102,10 @@ const fetchGitRepository = async (force = false) => {
 					historyObj.lastUpdated = +Date.now();
 					historyObj.type = "update";
 					historyObj._id = cryptoRandomString({ length: 10 });
+					historyObj.key = key;
 					historyWrites.push({
-						updateOne: {
-							filter: { key },
-							update: {
-								$set: historyObj,
-							},
-							upsert: true,
+						insertOne: {
+							document: historyObj,
 						},
 					});
 				}
