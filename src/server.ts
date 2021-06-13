@@ -2,8 +2,10 @@ import compression from "compression";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
+import { HistoryRouteItem, TokenHistoryAggregateRaw } from "./@types/ServerClientState";
 import Token from "./model/Token";
 import TokenHistory from "./model/TokenHistory";
+import { tryParseJson } from "./utils/Helper";
 
 const app = express();
 
@@ -14,13 +16,41 @@ app.use(compression());
 app.use(express.static("public"));
 
 app.get("/history", async (req, res) => {
-	const histories = await TokenHistory.find().sort({ lastUpdated: -1 }).limit(20).lean().exec();
+	const histories = await TokenHistory.aggregate([
+		{
+			$lookup: {
+				from: "tokens",
+				localField: "key",
+				foreignField: "key",
+				as: "token",
+			},
+		},
+		{
+			$unwind: {
+				path: "$token",
+			},
+		},
+		{
+			$project: {
+				_id: 1,
+				key: 1,
+				type: 1,
+				lastUpdated: 1,
+				platform: "$token.platform",
+				raw: "$token.raw",
+			},
+		},
+	])
+		.limit(20)
+		.exec();
+
 	return res.status(200).json({
 		success: true,
-		histories: histories.map((history) => {
+		histories: histories.map((history: TokenHistoryAggregateRaw) => {
 			return {
 				...history,
-				infodiff: history.infodiff ? JSON.parse(history.infodiff) : undefined,
+				infodiff: history.infodiff ? tryParseJson(history.infodiff) : undefined,
+				raw: history.raw ? tryParseJson(history.raw) : undefined,
 			};
 		}),
 	});
