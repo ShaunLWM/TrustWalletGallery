@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
+import ResetCSS from "./components/ResetCSS";
 import Home from "./Home";
 import TokenPage from "./TokenPage";
 
@@ -13,6 +14,7 @@ const Container = styled.div`
 function App() {
 	return (
 		<Container>
+			<ResetCSS />
 			<Router>
 				<Switch>
 					<Route exact path="/">
