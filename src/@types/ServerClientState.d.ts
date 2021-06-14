@@ -24,8 +24,9 @@ export interface HistoryRouteResults {
 	msg?: string;
 }
 
-export interface HistoryRouteItem extends Omit<TokenHistoryAggregateRaw, "infodiff" | "raw"> {
-	infodiff?: InfoDiff;
+export interface HistoryRouteItem extends Omit<TokenHistoryAggregateRaw, "infodiff" | "infoold" | "raw"> {
+	infodiff?: string;
+	infoold?: string;
 	raw?: TokenRawObj;
 }
 
