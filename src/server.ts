@@ -2,7 +2,7 @@ import compression from "compression";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import { HistoryRouteItem, TokenHistoryAggregateRaw } from "./@types/ServerClientState";
+import { TokenHistoryAggregateRaw } from "./@types/ServerClientState";
 import Token from "./model/Token";
 import TokenHistory from "./model/TokenHistory";
 import { tryParseJson } from "./utils/Helper";
