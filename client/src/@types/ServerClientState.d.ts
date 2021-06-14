@@ -1,7 +1,15 @@
+export interface InfoDiff {
+	added: object;
+	deleted: object;
+	updated: object;
+}
+
+// typings for server history aggregate result
 export interface TokenHistoryAggregateRaw {
 	_id: string;
 	key: string;
 	infodiff: string;
+	infoold: string;
 	imgdiff: string;
 	lastUpdated: number;
 	type: "add" | "update";
@@ -9,10 +17,11 @@ export interface TokenHistoryAggregateRaw {
 	platform?: string;
 }
 
-export interface InfoDiff {
-	added: object;
-	deleted: object;
-	updated: object;
+// typings for ShortHistorySection
+export interface HistoryRouteResults {
+	success: boolean;
+	histories: HistoryRouteItem[];
+	msg?: string;
 }
 
 export interface HistoryRouteItem extends Omit<TokenHistoryAggregateRaw, "infodiff" | "raw"> {
@@ -20,12 +29,7 @@ export interface HistoryRouteItem extends Omit<TokenHistoryAggregateRaw, "infodi
 	raw?: TokenRawObj;
 }
 
-export interface HistoryRouteResults {
-	success: boolean;
-	histories: HistoryRouteItem[];
-	msg?: string;
-}
-
+// typings for single TokenPage
 export type TokenResults = TokenResultsSuccess | TokenResultsFailed;
 
 export interface TokenResultsFailed {
@@ -43,7 +47,8 @@ export interface TokenResultsSuccess {
 	histories: {
 		_id: string;
 		key: string;
-		infodiff?: InfoDiff;
+		infodiff?: string;
+		infoold?: string;
 		imgdiff?: string;
 		lastUpdated: number;
 		type: "add" | "update";
