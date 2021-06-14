@@ -1,5 +1,5 @@
 html {
-	font-family: 'Inter', sans-serif;
+	font-family: "Inter", sans-serif;
 }
 
 body {
@@ -8,10 +8,13 @@ body {
 	height: 100%;
 }
 
-span, pre, div {
+span,
+pre,
+div {
 	color: #bfbfbf;
 }
 
-ul,ol {
-	margin: 0
+ul,
+ol {
+	margin: 0;
 }
