@@ -50,7 +50,11 @@ const TokenImage = styled.img`
 	border-color: rgba(35, 35, 35, 0.4);
 `;
 
-export default function ShortHistorySection() {
+interface Props {
+	tokenKey?: string;
+}
+
+export default function ShortHistorySection({ tokenKey = "" }: Props) {
 	const [loaded, setLoaded] = useState(false);
 	const [error, setError] = useState<string>();
 	const [histories, setHistories] = useState<HistoryRouteItem[]>([]);
@@ -58,7 +62,7 @@ export default function ShortHistorySection() {
 	useEffect(() => {
 		const fetchHistory = async () => {
 			try {
-				const results = await fetch(`${getBaseUrl()}/history`);
+				const results = await fetch(`${getBaseUrl()}/history${tokenKey ? `/${tokenKey}` : ""}`);
 				const json = (await results.json()) as HistoryRouteResults;
 				setLoaded(true);
 				if (json.success) {
@@ -78,7 +82,7 @@ export default function ShortHistorySection() {
 		};
 
 		fetchHistory();
-	}, []);
+	}, [tokenKey]);
 
 	const renderChangelog = (history: HistoryRouteItem) => {
 		if (history.type === "add") {

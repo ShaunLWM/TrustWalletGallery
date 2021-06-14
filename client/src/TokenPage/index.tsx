@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { TokenResults, TokenResultsSuccess } from "../@types/ServerClientState";
+import ShortHistorySection from "../components/ShortHistorySection";
 import { getBaseUrl } from "../utils/EnvironmentManager";
 
 const Container = styled.div`
@@ -12,7 +13,8 @@ const Container = styled.div`
 const TokenImage = styled.img`
 	height: 42px;
 	width: 42px;
-`
+	border-radius: 50px;
+`;
 
 export default function TokenPage() {
 	const { id } = useParams<{ id: string }>();
@@ -63,6 +65,9 @@ export default function TokenPage() {
 			<TokenImage src={`${getBaseUrl()}/img/token/${token?.key}.png`} alt={token?.key} />
 
 			<pre>{JSON.stringify(token?.raw, null, 2)}</pre>
+			<hr />
+			<h3>History</h3>
+			<ShortHistorySection tokenKey={id}/>
 		</Container>
 	);
 }
