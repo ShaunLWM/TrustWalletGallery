@@ -16,6 +16,13 @@ const TokenImage = styled.img`
 	border-radius: 50px;
 `;
 
+const TokenTitle = styled.span`
+	font-weight: 700;
+	font-size: 24px;
+	margin-top: 8px;
+	margin-bottom: 8px;
+`;
+
 export default function TokenPage() {
 	const { id } = useParams<{ id: string }>();
 	const [loaded, setLoaded] = useState(false);
@@ -59,15 +66,15 @@ export default function TokenPage() {
 
 	return (
 		<Container>
-			<span>
+			<TokenTitle>
 				{token?.raw.name} [{token?.raw.symbol}]
-			</span>
+			</TokenTitle>
 			<TokenImage src={`${getBaseUrl()}/img/token/${token?.key}.png`} alt={token?.key} />
 
 			<pre>{JSON.stringify(token?.raw, null, 2)}</pre>
 			<hr />
 			<h3>History</h3>
-			<ShortHistorySection tokenKey={id}/>
+			<ShortHistorySection tokenKey={id} />
 		</Container>
 	);
 }
