@@ -42,7 +42,9 @@ const fetchGitRepository = async (force = false) => {
 	const historyWrites = [];
 	const tokenWrites = [];
 
-	const folders = fs.readdirSync("blockchains").filter((dir) => BLOCKCHAIN_WHITELISTED_FOLDER.includes(dir));
+	const folders = fs
+		.readdirSync("blockchains")
+		.filter((dir) => (BLOCKCHAIN_WHITELISTED_FOLDER.length > 0 ? BLOCKCHAIN_WHITELISTED_FOLDER.includes(dir) : true));
 
 	for (const folder of folders) {
 		const folderAssetsDirectory = path.resolve("blockchains", folder, "assets");
