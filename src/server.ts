@@ -48,6 +48,11 @@ app.get("/history/:token?", async (req, res) => {
 				raw: "$token.raw",
 			},
 		},
+		{
+			$sort: {
+				lastUpdated: -1
+			}
+		}
 	];
 
 	if (req.params.token) {
