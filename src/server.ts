@@ -15,8 +15,8 @@ app.use(compression());
 
 app.use(express.static("public"));
 
-app.get("/history", async (req, res) => {
-	const histories = await TokenHistory.aggregate([
+app.get("/history/:token?", async (req, res) => {
+	const agg: any[] = [
 		// {
 		// 	$match: {
 		// 		type: "update",
@@ -47,10 +47,17 @@ app.get("/history", async (req, res) => {
 				raw: "$token.raw",
 			},
 		},
-	])
-		.limit(20)
-		.exec();
+	];
 
+	if (req.params.token) {
+		agg.unshift({
+			$match: {
+				key: req.params.token,
+			},
+		});
+	}
+
+	const histories = await TokenHistory.aggregate(agg).limit(20).exec();
 	return res.status(200).json({
 		success: true,
 		histories: histories.map((history: TokenHistoryAggregateRaw) => {
