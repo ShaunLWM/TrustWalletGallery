@@ -10,3 +10,7 @@ export const timeAgo = (time: number) => {
 export const isDev = () => {
 	return !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 };
+
+export const beautifyJson = (str: string) => {
+	return JSON.stringify(JSON.parse(str), null, 2);
+}	

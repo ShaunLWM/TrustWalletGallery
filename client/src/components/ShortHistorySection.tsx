@@ -1,9 +1,12 @@
 import dayjs from "dayjs";
+import { detailedDiff } from "deep-object-diff";
 import React, { useEffect, useState } from "react";
+import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { HistoryRouteItem, HistoryRouteResults } from "../@types/ServerClientState";
+import { HistoryRouteItem, HistoryRouteResults, InfoDiff } from "../@types/ServerClientState";
 import { getBaseUrl } from "../utils/EnvironmentManager";
+import { beautifyJson } from "../utils/Helper";
 
 const HistoryRowContainer = styled.div`
 	display: flex;
@@ -94,15 +97,36 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 		}
 
 		const arr = [];
-		if (history.infodiff) {
-			if (history.infodiff.added && Object.keys(history.infodiff.added).length > 0) {
-				arr.push(<span>Added {Object.keys(history.infodiff.added).length} keys</span>);
-			}
-			if (history.infodiff.deleted && Object.keys(history.infodiff.deleted).length > 0) {
-				arr.push(<span>Added {Object.keys(history.infodiff.deleted).length} keys</span>);
-			}
-			if (history.infodiff.updated && Object.keys(history.infodiff.updated).length > 0) {
-				arr.push(<span>Added {Object.keys(history.infodiff.updated).length} keys</span>);
+		if (history.infodiff && history.infoold) {
+			if (tokenKey) {
+				arr.push(
+					<ReactDiffViewer
+						oldValue={beautifyJson(history.infodiff)}
+						newValue={beautifyJson(history.infoold)}
+						splitView={true}
+						hideLineNumbers={true}
+						compareMethod={DiffMethod.WORDS}
+						styles={{
+							diffContainer: {
+								"max-width": "75%",
+							},
+						}}
+					/>
+				);
+			} else {
+				// if no token key, we just want a simple key changes count
+				const infoDiff: InfoDiff = detailedDiff(JSON.parse(history.infodiff), JSON.parse(history.infoold)) as InfoDiff;
+				if (infoDiff) {
+					if (infoDiff.added && Object.keys(infoDiff.added).length > 0) {
+						arr.push(<span>Added {Object.keys(infoDiff.added).length} keys</span>);
+					}
+					if (infoDiff.deleted && Object.keys(infoDiff.deleted).length > 0) {
+						arr.push(<span>Added {Object.keys(infoDiff.deleted).length} keys</span>);
+					}
+					if (infoDiff.updated && Object.keys(infoDiff.updated).length > 0) {
+						arr.push(<span>Added {Object.keys(infoDiff.updated).length} keys</span>);
+					}
+				}
 			}
 		}
 
