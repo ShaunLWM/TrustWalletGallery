@@ -64,7 +64,6 @@ app.get("/history/:token?", async (req, res) => {
 		histories: histories.map((history: TokenHistoryAggregateRaw) => {
 			return {
 				...history,
-				infodiff: history.infodiff ? tryParseJson(history.infodiff) : undefined,
 				raw: history.raw ? tryParseJson(history.raw) : undefined,
 			};
 		}),
