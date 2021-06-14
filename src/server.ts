@@ -42,6 +42,7 @@ app.get("/history/:token?", async (req, res) => {
 				type: 1,
 				lastUpdated: 1,
 				infodiff: 1,
+				infoold: 1,
 				imgdiff: 1,
 				platform: "$token.platform",
 				raw: "$token.raw",
@@ -86,12 +87,7 @@ app.get("/token/:token", async (req, res) => {
 	}
 
 	if (results[1].status === "fulfilled") {
-		json.histories = results[1].value.map((history) => {
-			return {
-				...history,
-				infodiff: history.infodiff ? JSON.parse(history.infodiff) : undefined,
-			};
-		});
+		json.histories = results[1].value;
 	}
 
 	return res.status(200).json({ success: true, ...json });

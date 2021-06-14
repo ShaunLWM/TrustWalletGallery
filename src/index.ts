@@ -86,7 +86,8 @@ const fetchGitRepository = async (force = false) => {
 						(jsonChanges["updated"] && Object.keys(jsonChanges["updated"]).length > 0)
 					) {
 						console.log(`${key}: json changes`);
-						historyObj.infodiff = JSON.stringify(jsonChanges);
+						historyObj.infodiff = JSON.stringify(coinJsonInfo);
+						historyObj.infoold = existingToken.raw;
 						tokenObj.raw = JSON.stringify(coinJsonInfo);
 					}
 				} catch (error) {}
