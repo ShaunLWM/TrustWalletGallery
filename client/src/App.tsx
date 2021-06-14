@@ -7,8 +7,9 @@ import TokenPage from "./TokenPage";
 
 const Container = styled.div`
 	height: 100%;
-	width: 100%;
+	width: 75%;
 	flex: 1;
+	margin: 20px auto 0px;
 `;
 
 function App() {
