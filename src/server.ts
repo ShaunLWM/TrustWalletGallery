@@ -83,7 +83,7 @@ app.get("/token/:token", async (req, res) => {
 			return res.status(400).json({ success: false, msg: "Token doesn't exist" });
 		}
 
-		json.token = { ...results[0].value, raw: JSON.parse(results[0].value.raw) };
+		json.token = { ...results[0].value, raw: tryParseJson(results[0].value.raw) };
 	}
 
 	if (results[1].status === "fulfilled") {
