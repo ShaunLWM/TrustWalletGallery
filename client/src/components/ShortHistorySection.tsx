@@ -142,7 +142,7 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 								<TokenImage src={`${getBaseUrl()}/img/token/${history.key}.png`} alt="img" />
 								{renderChangelog(history)}
 							</HistoryLeft>
-							{dayjs(history.lastUpdated).fromNow()}
+							<span title={dayjs(history.lastUpdated).toISOString()}>{dayjs(history.lastUpdated).fromNow()}</span>
 						</HistoryRowContainer>
 					</HistoryLink>
 				);
