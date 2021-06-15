@@ -195,7 +195,7 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 					</HistoryLink>
 				);
 			})}
-			<LoadMoreButton onClick={onLoadMoreClick}>Load More</LoadMoreButton>
+			{!tokenKey && <LoadMoreButton onClick={onLoadMoreClick}>Load More</LoadMoreButton>}
 		</>
 	);
 }
