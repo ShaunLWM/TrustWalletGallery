@@ -53,6 +53,24 @@ const TokenImage = styled.img`
 	border-color: rgba(35, 35, 35, 0.4);
 `;
 
+const LoadMoreButton = styled.div`
+	cursor: pointer;
+	width: 100%;
+	height: 32px;
+	background-color: transparent;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 16px;
+	color: #0095ff;
+	font-weight: bold;
+	border-radius: 8px;
+	&:hover {
+		background-color: #0095ff;
+		color: white;
+	}
+`;
+
 interface Props {
 	tokenKey?: string;
 }
@@ -61,15 +79,16 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 	const [loaded, setLoaded] = useState(false);
 	const [error, setError] = useState<string>();
 	const [histories, setHistories] = useState<HistoryRouteItem[]>([]);
+	const [page, setPage] = useState<number>(1);
 
 	useEffect(() => {
 		const fetchHistory = async () => {
 			try {
-				const results = await fetch(`${getBaseUrl()}/history${tokenKey ? `/${tokenKey}` : ""}`);
+				const results = await fetch(`${getBaseUrl()}/history${tokenKey ? `/${tokenKey}` : ""}?page=${page}`);
 				const json = (await results.json()) as HistoryRouteResults;
 				setLoaded(true);
 				if (json.success) {
-					setHistories(json.histories);
+					setHistories((prev) => [...prev, ...json.histories]);
 				} else {
 					if (json.msg) {
 						setError(json.msg);
@@ -85,7 +104,7 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 		};
 
 		fetchHistory();
-	}, [tokenKey]);
+	}, [tokenKey, page]);
 
 	const renderChangelog = (history: HistoryRouteItem) => {
 		if (history.type === "add") {
@@ -101,8 +120,8 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 			if (tokenKey) {
 				arr.push(
 					<ReactDiffViewer
-						oldValue={beautifyJson(history.infodiff)}
-						newValue={beautifyJson(history.infoold)}
+						oldValue={beautifyJson(history.infoold)}
+						newValue={beautifyJson(history.infodiff)}
 						splitView={true}
 						hideLineNumbers={true}
 						compareMethod={DiffMethod.WORDS}
@@ -145,6 +164,10 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 		}
 	};
 
+	const onLoadMoreClick = () => {
+		setPage((prev) => prev + 1);
+	};
+
 	if (!loaded) {
 		return <span>Loading..</span>;
 	}
@@ -171,6 +194,7 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 					</HistoryLink>
 				);
 			})}
+			<LoadMoreButton onClick={onLoadMoreClick}>Load More</LoadMoreButton>
 		</>
 	);
 }
