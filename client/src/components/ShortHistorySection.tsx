@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { detailedDiff } from "deep-object-diff";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -81,30 +81,31 @@ export default function ShortHistorySection({ tokenKey = "" }: Props) {
 	const [histories, setHistories] = useState<HistoryRouteItem[]>([]);
 	const [page, setPage] = useState<number>(1);
 
-	useEffect(() => {
-		const fetchHistory = async () => {
-			try {
-				const results = await fetch(`${getBaseUrl()}/history${tokenKey ? `/${tokenKey}` : ""}?page=${page}`);
-				const json = (await results.json()) as HistoryRouteResults;
-				setLoaded(true);
-				if (json.success) {
-					setHistories((prev) => [...prev, ...json.histories]);
+	const fetchHistory = useCallback(async () => {
+		try {
+			const results = await fetch(`${getBaseUrl()}/history${tokenKey ? `/${tokenKey}` : ""}?page=${page}`);
+			const json = (await results.json()) as HistoryRouteResults;
+			setLoaded(true);
+			if (json.success) {
+				setHistories((prev) => [...prev, ...json.histories]);
+			} else {
+				if (json.msg) {
+					setError(json.msg);
 				} else {
-					if (json.msg) {
-						setError(json.msg);
-					} else {
-						setError("Error");
-					}
+					setError("Error");
 				}
-			} catch (e) {
-				setLoaded(true);
-				setError(e);
-				setHistories([]);
 			}
-		};
+		} catch (e) {
+			setLoaded(true);
+			setError(e);
+			setHistories([]);
+		}
+	}, [page, tokenKey]);
 
+	useEffect(() => {
 		fetchHistory();
-	}, [tokenKey, page]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [page]);
 
 	const renderChangelog = (history: HistoryRouteItem) => {
 		if (history.type === "add") {
