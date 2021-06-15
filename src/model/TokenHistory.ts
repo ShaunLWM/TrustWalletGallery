@@ -1,4 +1,5 @@
 import { Document, Model, model, Schema } from "mongoose";
+import PaginateAggregatePlugin from "mongoose-aggregate-paginate-v2";
 
 export interface ITokenHistory {
 	_id: string;
@@ -43,6 +44,8 @@ const TokenHistorySchema = new Schema<ITokenHistoryDocument, ITokenHistoryModel>
 	timestamps: false,
 	_id: false,
 });
+
+TokenHistorySchema.plugin(PaginateAggregatePlugin);
 
 export interface ITokenHistoryDocument extends ITokenHistory, Document {
 	_id: string;

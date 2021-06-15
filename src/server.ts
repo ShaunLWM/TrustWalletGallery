@@ -16,6 +16,14 @@ app.use(compression());
 app.use(express.static("public"));
 
 app.get("/history/:token?", async (req, res) => {
+	let page = 1;
+	if (req.query.page) {
+		page = parseInt(req.query.page as string);
+		if (isNaN(page)) {
+			page = 1;
+		}
+	}
+
 	const agg: any[] = [
 		// {
 		// 	$match: {
@@ -50,9 +58,9 @@ app.get("/history/:token?", async (req, res) => {
 		},
 		{
 			$sort: {
-				lastUpdated: -1
-			}
-		}
+				lastUpdated: -1,
+			},
+		},
 	];
 
 	if (req.params.token) {
@@ -63,10 +71,14 @@ app.get("/history/:token?", async (req, res) => {
 		});
 	}
 
-	const histories = await TokenHistory.aggregate(agg).limit(20).exec();
+	const histories = await TokenHistory.aggregatePaginate(TokenHistory.aggregate(agg), {
+		page,
+		limit: 20,
+	});
+
 	return res.status(200).json({
 		success: true,
-		histories: histories.map((history: TokenHistoryAggregateRaw) => {
+		histories: histories.docs.map((history: TokenHistoryAggregateRaw) => {
 			return {
 				...history,
 				raw: history.raw ? tryParseJson(history.raw) : undefined,
