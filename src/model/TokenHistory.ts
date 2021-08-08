@@ -1,5 +1,5 @@
 import { Document, Model, model, Schema } from "mongoose";
-import PaginateAggregatePlugin from "mongoose-aggregate-paginate-v2";
+import { default as PaginateAggregatePlugin }  from 'mongoose-aggregate-paginate-v2';
 
 export interface ITokenHistory {
 	_id: string;

@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import cryptoRandomString from "crypto-random-string";
 import { detailedDiff } from "deep-object-diff";
+import execa from "execa";
 import fs from "fs-extra";
 import md5File from "md5-file";
 import mongoose from "mongoose";
@@ -18,21 +19,19 @@ const PROJECT_DIRECTORY = path.resolve(".");
 const TRUST_WALLET_ASSET_DIRECTORY = path.resolve("..", ASSET_FOLDER_NAME);
 
 const fetchGitRepository = async (force = false) => {
-	// if (!fs.pathExistsSync(TRUST_WALLET_ASSET_DIRECTORY)) {
-	// 	console.log(`Path doesn't exist. Cloning..`);
-	// 	const results = await execa("git", [
-	// 		"clone",
-	// 		"https://github.com/trustwallet/assets",
-	// 		TRUST_WALLET_ASSET_DIRECTORY,
-	// 	]);
-	// 	console.log(results);
-	// }
+	if (!fs.pathExistsSync(TRUST_WALLET_ASSET_DIRECTORY)) {
+		console.log(`Path doesn't exist. Cloning..`);
+		const results = await execa("git", [
+			"clone",
+			"https://github.com/trustwallet/assets",
+			TRUST_WALLET_ASSET_DIRECTORY,
+		]);
+	}
 
 	console.log(`Folder exist. Updating..`);
 	process.chdir(TRUST_WALLET_ASSET_DIRECTORY);
-	// const repoFetch = await execa("git", ["fetch"]);
+	// await execa("git", ["fetch"]);
 	// // TODO: check the error message for not a git repo then clone again
-	// console.log(repoFetch);
 	// const repoPull = await execa("git", ["pull"]);
 	// console.log(repoPull);
 	// if (repoPull.stdout === "Already up to date." && !force) {
@@ -98,7 +97,7 @@ const fetchGitRepository = async (force = false) => {
 					console.log(`${key}: img changes`);
 					historyObj.imgdiff = imageHash;
 					tokenObj.img = imageHash;
-					fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
+					// fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
 				}
 
 				if (Object.keys(historyObj).length > 0) {
@@ -126,7 +125,7 @@ const fetchGitRepository = async (force = false) => {
 				}
 			} else {
 				console.log(`${key} doesn't exist`);
-				fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
+				// fs.copyFileSync(logoPath, path.resolve(PROJECT_DIRECTORY, "public", "img", "token", `${key}.png`));
 				const now = +Date.now();
 				tokenWrites.push({
 					insertOne: {
@@ -177,11 +176,11 @@ const fetchGitRepository = async (force = false) => {
 		useCreateIndex: true,
 	});
 
-	const count = await Token.collection.estimatedDocumentCount();
-	if (count < 1) {
-		console.log(`Filling database..`);
-		await fetchGitRepository(true);
-	}
+	// const count = await Token.collection.estimatedDocumentCount();
+	// if (count < 1) {
+	// console.log(`Filling database..`);
+	// await fetchGitRepository(true);
+	// }
 
 	schedule.scheduleJob("0 */12 * * *", async () => {
 		await fetchGitRepository();

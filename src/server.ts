@@ -6,12 +6,34 @@ import { TokenHistoryAggregateRaw } from "./@types/ServerClientState";
 import Token from "./model/Token";
 import TokenHistory from "./model/TokenHistory";
 import { tryParseJson } from "./utils/Helper";
+import https from "https";
+import fs from "fs-extra";
 
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+app.use(
+	cors({
+		origin: [/https*:\/\/shaunlwm\.me/, "http://localhost:3005"],
+	})
+);
 app.use(compression());
+
+if (process.env.ENVIRONMENT && process.env.ENVIRONMENT === "prod") {
+	const options = {
+		key: fs.readFileSync(process.env.SSL_KEY as string),
+		cert: fs.readFileSync(process.env.SSL_CERT as string),
+		ca: fs.readFileSync(process.env.SSL_CHAIN as string),
+	};
+
+	https.createServer(options, app).listen(process.env.SERVER_PORT, () => {
+		console.log(`[server] PROD up and runnin on port ${process.env.SERVER_PORT}`);
+	});
+} else {
+	app.listen(process.env.SERVER_PORT, () => {
+		console.log(`[server] DEV up and runnin on port ${process.env.SERVER_PORT}`);
+	});
+}
 
 app.use(express.static("public"));
 
@@ -63,14 +85,17 @@ app.get("/history/:token?", async (req, res) => {
 		},
 	];
 
+	// @ts-ignore
 	if (req.params.token) {
 		agg.unshift({
 			$match: {
+				// @ts-ignore
 				key: req.params.token,
 			},
 		});
 	}
 
+	// @ts-ignore
 	const histories = await TokenHistory.aggregatePaginate(TokenHistory.aggregate(agg), {
 		page,
 		limit: 20,
@@ -107,10 +132,6 @@ app.get("/token/:token", async (req, res) => {
 	}
 
 	return res.status(200).json({ success: true, ...json });
-});
-
-app.listen(process.env.SERVER_PORT, () => {
-	console.log(`Server up and running on port ${process.env.SERVER_PORT}`);
 });
 
 export default app;
